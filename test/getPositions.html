@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description" content="Use Viewer to start building new applications or easily embed Cesium into existing applications.">
+    <meta name="cesium-sandcastle-labels" content="Beginner, Showcases">
+    <title>Load Geoserver WMS</title>
+    <script src="https://cesiumjs.org/Cesium/Build/Cesium/Cesium.js"></script>
+    <script src="./ArcDashLine.js"></script>
+    <style>
+        @import url(https://cesiumjs.org/Cesium/Build/Cesium/Widgets/widgets.css);
+        html,body{
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            background: #000;
+        }
+        .fullSize{
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="cesiumContainer" class="fullSize"></div>
+<button id="location" style="position: absolute;right: 20px;top: 100px;">定位到WMS</button>
+<script>
+    var viewer = new Cesium.Viewer('cesiumContainer');
+
+    var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+    handler.setInputAction(function(event) {
+        //var mousePosition = viewer.scene.pickPosition(event.position);
+        var mousePosition = viewer.camera.pickEllipsoid(event.position);
+        console.log(mousePosition.x+','+mousePosition.y+','+mousePosition.z)
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+    document.getElementById('location').onclick=function(ev){
+        //缩放到指定位置
+        viewer.camera.setView({
+            destination: Cesium.Rectangle.fromDegrees(102.52471330164,35.188957267126,102.53940075424,35.193604303902)
+        });
+    };
+
+</script>
+</body>
+</html>

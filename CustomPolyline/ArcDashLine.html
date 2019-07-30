@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <meta name="description"
+          content="Use Viewer to start building new applications or easily embed Cesium into existing applications.">
+    <meta name="cesium-sandcastle-labels" content="Beginner, Showcases">
+    <title>ArcDashLine</title>
+    <script src="https://cesiumjs.org/Cesium/Build/Cesium/Cesium.js"></script>
+    <script src="./ArcDashLine.js"></script>
+    <style>
+        @import url(https://cesiumjs.org/Cesium/Build/Cesium/Widgets/widgets.css);
+
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            background: #000;
+        }
+
+        .fullSize {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<div id="cesiumContainer" class="fullSize"></div>
+<button id="addPosition" style="position: absolute;right: 20px;top: 100px;">激活鼠标添加节点</button>
+<button id="delete" style="position: absolute;right: 20px;top: 140px;">删除所有虚弧线</button>
+<button id="autoAdd" style="position: absolute;right: 20px;top: 180px;">动态加载</button>
+<script>
+    var viewer = new Cesium.Viewer('cesiumContainer');
+
+    //红色的虚弧线
+    var redLine = new ArcDashLine(viewer, {
+        nodes: [
+            new Node(new Cesium.Cartesian3(-2431990.752020506, 4046940.205844382, 4273783.93127434), '测试'),
+            new Node(new Cesium.Cartesian3(-1495768.031418596, 4480718.213741928, 4271243.580128807), '测试'),
+            new Node(new Cesium.Cartesian3(-1184599.2037314237, 4796939.0120496545, 4019681.17440506), '测试'),
+            new Node(new Cesium.Cartesian3(-624012.0949287192, 4842717.205421596, 4089816.828036088), '测试'),
+            new Node(new Cesium.Cartesian3(-45212.72643054614, 4572634.308794065, 4431394.54847528), '测试'),
+            new Node(new Cesium.Cartesian3(1390739.2251920053, 4889375.12639037, 3839419.098426028), '测试')
+        ],
+        color: Cesium.Color.RED
+    });
+
+    //自定义图标的虚弧线
+    var customIconLine = new ArcDashLine(viewer, {
+            nodes: [
+                new Node(new Cesium.Cartesian3(792314.121103676, 5202629.683187079, 3591459.9171885224), '测试'),
+                new Node(new Cesium.Cartesian3(-584890.3689951887, 5556503.571285619, 3066015.103760751), '测试'),
+                new Node(new Cesium.Cartesian3(-1451543.2894885433, 5547007.0170773715, 2784263.174506901), '测试'),
+                new Node(new Cesium.Cartesian3(-2043710.113185833, 5135278.258539932, 3172532.895456409), '测试'),
+                new Node(new Cesium.Cartesian3(-2009704.7465264578, 4693481.430599814, 3809872.155317192), '测试'),
+                new Node(new Cesium.Cartesian3(-1326058.4923600461, 4820555.098830106, 3947081.3702250994), '测试'),
+                new Node(new Cesium.Cartesian3(-1439992.5374938478, 5117849.62321532, 3511632.072088565), '测试')
+            ],
+            icon: './img/poi.png'
+        });
+
+    //鼠标点击添加节点
+    var dynamicAddPosition = new ArcDashLine(viewer, {
+        color: Cesium.Color.HOTPINK
+    });
+    var drawing = false;
+    document.getElementById('addPosition').onclick = function (ev) {
+        drawing = !drawing;
+        if (drawing) {
+            document.getElementById('addPosition').innerHTML = '取消鼠标添加节点';
+        } else {
+            document.getElementById('addPosition').innerHTML = '激活鼠标添加节点';
+        }
+    };
+    var handler = new Cesium.ScreenSpaceEventHandler(viewer.canvas);
+    handler.setInputAction(function (event) {
+        if (!drawing) {
+            return;
+        }
+        var position = viewer.camera.pickEllipsoid(event.position);
+        if (!Cesium.defined(position)) {
+            return;
+        }
+
+        dynamicAddPosition.addNode(new Node(position, '测试'))
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+    //定时动态添加节点
+    var autoAddPosition = new ArcDashLine(viewer, {
+        color: Cesium.Color.LAWNGREEN
+    });
+    var nodes = [
+            new Node(Cesium.Cartesian3.fromDegrees(-115.0, 37.0), '测试'),
+            new Node(new Cesium.Cartesian3(-2183532.736935967, 3815426.9001592286, 4605689.223860137), '测试'),
+            new Node(new Cesium.Cartesian3(-2790667.080332468, 3972920.8980890615, 4122399.323214797), '测试'),
+            new Node(new Cesium.Cartesian3(-2912151.621033652, 4426962.527035864, 3538028.361322341), '测试'),
+            new Node(new Cesium.Cartesian3(-3030795.965410794, 4797776.335045017, 2901638.573234277), '测试'),
+            new Node(new Cesium.Cartesian3(-2756523.0819201334, 5170044.145301007, 2512036.4638419137), '测试'),
+            new Node(new Cesium.Cartesian3(-2274854.1146406885, 5498563.330516145, 2288270.6163944844), '测试'),
+            new Node(new Cesium.Cartesian3(-1196635.8827558504, 5775299.441883205, 2419741.6698474446), '测试'),
+            new Node(new Cesium.Cartesian3(-921295.1637768912, 5629215.39575246, 2844163.018656473), '测试'),
+            new Node(new Cesium.Cartesian3(-1658935.2408411694, 5454169.171328291, 2850585.910922258), '测试'),
+            new Node(new Cesium.Cartesian3(-2053221.7388135002, 5209777.309755547, 3043143.0911758323), '测试'),
+            new Node(new Cesium.Cartesian3(-2205832.0451070406, 4910539.175519999, 3409282.478673376), '测试'),
+            new Node(new Cesium.Cartesian3(-2167348.0119533576, 4587761.1458013095, 3851713.479112631), '测试'),
+            new Node(new Cesium.Cartesian3(-1896133.2300662422, 4347634.139307618, 4249901.322171159), '测试'),
+        ];
+
+    document.getElementById('autoAdd').onclick = function (ev) {
+        var i = 0;
+        var timer = setInterval(function () {
+            if (i < nodes.length) {
+                autoAddPosition.addNode(nodes[i])
+            } else {
+                clearInterval(timer);
+            }
+            i++;
+        }, 500);
+    };
+
+
+    //移除所有节点
+    document.getElementById('delete').onclick = function (ev) {
+        redLine.removeAll();
+        customIconLine.removeAll();
+        dynamicAddPosition.removeAll();
+        autoAddPosition.removeAll();
+    };
+
+    //定位到所有实体
+    viewer.zoomTo(viewer.entities);
+
+</script>
+</body>
+</html>
